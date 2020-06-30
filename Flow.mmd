@@ -1,0 +1,10 @@
+graph TD
+A[Push code to Azure Git Repo] -->|Triggers Webhook| B(Azure Function<br/> triggers)
+B -->|Starts Azure <br/>Container instance| E(Container Registers  <br/> ADO Build Agent)
+E --> F[Build Agent<br/> Available]
+A[Push code to <br/> Azure Git Repo] --CICD --> F
+F --> |Build Completes|G[Azure Container <br/> shuts down]:::Filled
+subgraph Container Action
+Z(Pulls image from <br> Dockerhub) --> E
+end
+classDef Filled fill:#f96;

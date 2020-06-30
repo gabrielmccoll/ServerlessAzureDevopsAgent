@@ -3,6 +3,37 @@ using namespace System.Net
 # Input bindings are passed in via param block.
 param($Request, $TriggerMetadata)
 
+
+
+#Check if a build is queued before launching a container
+
+$buildapikey = ''
+
+function Test-Build {
+    $url = "https://dev.azure.com/cloudkingdoms/Jekyll%20Blog/_apis/build/builds?statusFilter=notstarted&api-version=5.1"
+    $token = [System.Convert]::ToBase64String([System.Text.Encoding]::ASCII.GetBytes(":$buildapikey"))
+    $result = Invoke-RestMethod -Uri $url -Method Get -ContentType "application/json" -Headers @{Authorization = "Basic $token"}
+    $result.value
+}
+
+#Checks if the build is queued or not for 
+$count = 0
+do {
+    $buildqueued = Test-Build
+    if ($null -eq $buildqueued) {
+        start-sleep 3
+        $count = $count + 3
+        if($count -gt 9) {
+            Write-Error 'No Build was queued'
+            exit
+            
+        }
+    }
+} until ($null -ne $buildqueued)
+
+
+
+
 # Interact with query parameters or the body of the request.
 $name = 'jekyllcontainerado'
 
