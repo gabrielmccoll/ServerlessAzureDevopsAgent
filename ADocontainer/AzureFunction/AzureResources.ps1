@@ -11,7 +11,3 @@ New-AzFunctionApp -ResourceGroupName $ResourceGroupName -Location $location -OST
 -IdentityType SystemAssigned -StorageAccountName $StorageName -Name $FunctionAppName -FunctionsVersion 3 -RunTimeVersion 6.2
 $id = (Get-AzFunctionApp -Name $FunctionAppName -ResourceGroupName $ResourceGroupName).IdentityPrincipalId
 Set-AzKeyVaultAccessPolicy -VaultName $keyVaultname -ObjectId $id -PermissionsToSecrets get -BypassObjectIdValidation
-
-
-##this goes in the function
-(Get-AzKeyVaultSecret -VaultName $keyVaultname -Name $keyXXXXXname).SecretValueText

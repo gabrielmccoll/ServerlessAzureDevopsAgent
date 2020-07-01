@@ -3,14 +3,12 @@ using namespace System.Net
 # Input bindings are passed in via param block.
 param($Request, $TriggerMetadata)
 
-
-
 #Check if a build is queued before launching a container
 #You need to put the key in keyvault
-$buildapikey = (Get-AzKeyVaultSecret -VaultName adocontainer -Name GetBuilds).SecretValueTex
+$buildapikey = (Get-AzKeyVaultSecret -VaultName adocontainer -Name GetBuilds).SecretValueText
 
 function Test-Build {
-    $url = "https://dev.azure.com/cloudkingdoms/Jekyll%20Blog/_apis/build/builds?statusFilter=notstarted&api-version=5.1"
+    $url = "https://dev.azure.com/$ADOOrganization/$ADOProject/_apis/build/builds?statusFilter=notstarted&api-version=5.1"
     $token = [System.Convert]::ToBase64String([System.Text.Encoding]::ASCII.GetBytes(":$buildapikey"))
     $result = Invoke-RestMethod -Uri $url -Method Get -ContentType "application/json" -Headers @{Authorization = "Basic $token"}
     $result.value
@@ -26,13 +24,9 @@ do {
         if($count -gt 9) {
             Write-Error 'No Build is queued therefore no container will be started'
             exit
-            
         }
     }
 } until ($null -ne $buildqueued)
-
-
-
 
 # Interact with query parameters or the body of the request.
 $name = 'jekyllcontainerado'
@@ -48,16 +42,15 @@ $dockerenv = @{
     AZP_POOL='Jekyll'
 } 
 
-$name = $name #+ $rand
-
 if ($name) {
-    $status = [HttpStatusCode]::OK
     New-AzContainerGroup -ResourceGroupName $resourcegroupname -Name $name `
         -Image gabrielmccoll/jekylladoagentminmistakes:latest -OsType linux `
         -RestartPolicy Never -EnvironmentVariable $dockerenv -AssignIdentity
     $body = "Started container group $name"
 }
 
+#The first time the container group is made, this part might take a couple mins to propograte.
+#Meaning your container will fail with an error message about not being able to access the key. 
 $id = (Get-AzContainerGroup -ResourceGroupName $resourcegroupname -Name $name).Identity.PrincipalId
 Set-AzKeyVaultAccessPolicy -VaultName adocontainer -ObjectId $id -PermissionsToSecrets get -BypassObjectIdValidation
 
