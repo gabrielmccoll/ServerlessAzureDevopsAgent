@@ -1,4 +1,4 @@
-$ResourceGroupName = "ContainerAgent2"
+$ResourceGroupName = "ContainerAgentJK"
 $keyVaultname = 'ContainerAgentKey'
 $StorageName = 'buildcontsa'
 $FunctionAppName = 'buildcontfun'

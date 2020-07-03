@@ -6,6 +6,8 @@ param($Request, $TriggerMetadata)
 #Check if a build is queued before launching a container
 #You need to put the key in keyvault
 $buildapikey = (Get-AzKeyVaultSecret -VaultName adocontainer -Name GetBuilds).SecretValueText
+$ADOOrganization = 'yourorg'
+$ADOProject = 'Project'
 
 function Test-Build {
     $url = "https://dev.azure.com/$ADOOrganization/$ADOProject/_apis/build/builds?statusFilter=notstarted&api-version=5.1"
@@ -14,7 +16,9 @@ function Test-Build {
     $result.value
 }
 
-#Checks if the build is queued or not for 
+#Checks if the build is queued or not.
+#This makes sure a container doesn't get spun up without a build.
+#potentially wracking up costs. 
 $count = 0
 do {
     $buildqueued = Test-Build
@@ -32,12 +36,13 @@ do {
 $name = 'jekyllcontainerado'
 
 $rand = Get-Random -Maximum 1000000
+#You don't really need some of this anymore, was left over from the sample but it shows how this could be worked on more.
 $body = "This HTTP triggered function executed successfully. Pass a name in the query string or in the request body for a personalized response."
 $agentname = 'dockerlinuxjek' + $rand
 $resourcegroupname = 'ContainerAgent'
 
 $dockerenv = @{
-    AZP_URL='https://dev.azure.com/cloudkingdoms' ;
+    AZP_URL="Https://dev.azure.com/$ADOOrganization/" ;
     AZP_AGENT_NAME=$agentname ;
     AZP_POOL='Jekyll'
 } 
