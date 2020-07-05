@@ -7,8 +7,8 @@ param($Request, $TriggerMetadata)
 #You need to put the key in keyvault
 $VaultName = 'ContainerAgentKeyjk'
 $buildapikey = (Get-AzKeyVaultSecret -VaultName $VaultName -Name GetBuilds).SecretValueText
-$ADOOrganization = 'yourorg'
-$ADOProject = 'yourproject'
+$ADOOrganization = 'Your Org' #Not the full URL
+$ADOProject = 'Jekyll Blog' #or whatever the project name is. 
 $resourcegroupname = 'ContainerAgentJK'
 #You don't really need the body anymore, was left over from the sample but it shows how this could be worked on more.
 $body = "This HTTP triggered function executed successfully. Pass a name in the query string or in the request body for a personalized response."
@@ -22,8 +22,8 @@ $dockerenv = @{
     AZP_URL="Https://dev.azure.com/$ADOOrganization/" ;
     AZP_AGENT_NAME=$agentname ;
     AZP_POOL='Jekyll';
-    $AZ_SECRET_NAME='the Name of the secret. Not the Value.';
-    $AZ_KEY_VAULT='Name of the Key Vault'
+    AZ_SECRET_NAME='adocontaineragent';
+    AZ_KEY_VAULT='ContainerAgentKeyjk'
 } 
 
 $containerinstancename = 'jekyllcontainerado2'
