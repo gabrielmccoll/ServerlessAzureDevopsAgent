@@ -23,7 +23,7 @@ $dockerenv = @{
     AZP_AGENT_NAME=$agentname ;
     AZP_POOL='Jekyll';
     AZ_SECRET_NAME='adocontaineragent';
-    AZ_KEY_VAULT='ContainerAgentKeyjk'
+    AZ_KEY_VAULT=$VaultName
 } 
 
 $containerinstancename = 'jekyllcontainerado2'
